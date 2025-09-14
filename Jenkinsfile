@@ -4,7 +4,7 @@ pipeline {
     environment {
         // Adjust these for your project
         DOCKER_IMAGE = "radha"
-        IMAGE_TAG    = "V!"
+        IMAGE_TAG    = "V1"
         CONTAINER_NAME = "shyam"
     }
 
