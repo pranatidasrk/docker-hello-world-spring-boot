@@ -9,9 +9,7 @@ public class HelloController {
     
     @RequestMapping("/")
     public String index() {
-        return "Hello World
-            my nme is radha
-            i hatesangu\n";
+        return "Hello World \n my nme is radha \ni hatesangu\n";
     }
     
 }
