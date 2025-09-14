@@ -11,7 +11,7 @@ pipeline {
     }
     environment {
         // Adjust these for your project
-        DOCKER_IMAGE = "Hari"
+        DOCKER_IMAGE = "premanandamaharaj"
 		CONTAINER_NAME = "pemananda"
     }
 
