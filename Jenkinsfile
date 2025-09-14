@@ -5,7 +5,6 @@ pipeline {
         // Change these to match your project and registry details
         DOCKER_IMAGE = "radha"
         IMAGE_TAG    = "V1"
-		mvn-command  = "clean package"
     }
 
     stages {
@@ -18,7 +17,7 @@ pipeline {
         stage('Build with Maven') {
             steps {
                 // For Linux agents
-                bat 'mvn ${mvn-command}'
+                bat 'mvn clean package'
                 // For Windows agents, use: bat 'mvn clean package'
             }
         }
