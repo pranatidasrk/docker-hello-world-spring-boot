@@ -3,9 +3,9 @@ pipeline {
 
     environment {
         // Adjust these for your project
-        DOCKER_IMAGE = "radha"
-        IMAGE_TAG    = "V1"
-        CONTAINER_NAME = "shyam"
+        DOCKER_IMAGE = "krishana"
+        IMAGE_TAG    = "V2"
+        CONTAINER_NAME = "shyam1"
     }
 
     stages {
