@@ -12,7 +12,7 @@ pipeline {
     environment {
         // Adjust these for your project
         DOCKER_IMAGE = "Hari"
-		CONTAINER_NAME = "Hari1"
+		CONTAINER_NAME = "pemananda"
     }
 
     stages {
