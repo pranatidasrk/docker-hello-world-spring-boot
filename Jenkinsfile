@@ -39,7 +39,7 @@ pipeline {
                     """
 
                     // Run the new container in detached mode
-                    bat "docker run -d --name %CONTAINER_NAME% -p 8080:8080 %DOCKER_IMAGE%:%IMAGE_TAG%"
+                    bat "docker run -d --name %CONTAINER_NAME% -p 8080:8081 %DOCKER_IMAGE%:%IMAGE_TAG%"
                 }
             }
         }
