@@ -1,16 +1,18 @@
 pipeline {
     agent any
 
-    /* ---------- Add build parameters here ---------- */
     parameters {
-        string(name: 'IMAGE_TAG', defaultValue: 'latest',
-               description: 'Docker image tag to build and run')
-        string(name: 'CONTAINER_NAME', defaultValue: 'my-running-app',
-               description: 'Name for the Docker container')
+        // <─── Parameter user will fill when starting the job
+        string(
+            name: 'DOCKER_VERSION',
+            defaultValue: 'latest',
+            description: 'Docker image tag/version (e.g. v1.0, 1.2.3, latest)'
+        )
     }
     environment {
         // Adjust these for your project
         DOCKER_IMAGE = "krishana"
+		CONTAINER_NAME = "shaym"
     }
 
     stages {
