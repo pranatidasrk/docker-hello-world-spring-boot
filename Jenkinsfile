@@ -11,8 +11,8 @@ pipeline {
     }
     environment {
         // Adjust these for your project
-        DOCKER_IMAGE = "krishana"
-		CONTAINER_NAME = "shaym"
+        DOCKER_IMAGE = "Hari"
+		CONTAINER_NAME = "Hari1"
     }
 
     stages {
