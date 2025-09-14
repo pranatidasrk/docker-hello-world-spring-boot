@@ -33,8 +33,13 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 script {
-                   
-                    bat "docker run -itd --name %CONTAINER_NAME% -p 8080:8080 %DOCKER_IMAGE%:%IMAGE_TAG%"
+                    // Stop and remove any existing container with the same name
+                    bat """
+                    docker ps -a -q --filter name=%CONTAINER_NAME% | findstr . && docker stop %CONTAINER_NAME% && docker rm %CONTAINER_NAME% || echo No existing container to remove
+                    """
+
+                    //
+                    bat "docker run -itd --name %CONTAINER_NAME% -p 8081:8080 %DOCKER_IMAGE%:%IMAGE_TAG%"
                 }
             }
         }
