@@ -8,9 +8,10 @@ pipeline {
             defaultValue: 'latest',
             description: 'Docker image tag/version (e.g. v1.0, 1.2.3, latest)'
         )
-    }
-     DOCKER_IMAGE   = "premanandamaharaj"  // change to your image name
-    CONTAINER_NAME = "premananda"                    // container name to run
+    environment {
+        // Adjust these for your project
+        DOCKER_IMAGE = "krishana"
+		CONTAINER_NAME = "shaym"
     }
 
     stages {
