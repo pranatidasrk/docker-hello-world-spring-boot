@@ -8,6 +8,7 @@ pipeline {
             defaultValue: 'latest',
             description: 'Docker image tag/version (e.g. v1.0, 1.2.3, latest)'
         )
+    }
     environment {
         // Adjust these for your project
         DOCKER_IMAGE = "krishana"
