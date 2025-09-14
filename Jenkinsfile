@@ -1,11 +1,16 @@
 pipeline {
-    agent any    // or agent { label 'windows' } if you have a Windows node label
+    agent any
 
+    /* ---------- Add build parameters here ---------- */
+    parameters {
+        string(name: 'IMAGE_TAG', defaultValue: 'latest',
+               description: 'Docker image tag to build and run')
+        string(name: 'CONTAINER_NAME', defaultValue: 'my-running-app',
+               description: 'Name for the Docker container')
+    }
     environment {
         // Adjust these for your project
         DOCKER_IMAGE = "krishana"
-        IMAGE_TAG    = "V2"
-        CONTAINER_NAME = "shyam1"
     }
 
     stages {
