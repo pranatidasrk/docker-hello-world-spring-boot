@@ -39,7 +39,8 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 script {
-                    bat "docker stop %(docker ps -q)% && docker rm %(docker ps -aq)%"
+                    bat 'for /F "tokens=*" %i in (\'docker ps -q\') do docker stop %i'
+                    bat 'for /F "tokens=*" %i in (\'docker ps -aq\') do docker rm %i'
                     bat "docker run -itd -p 8081:8080 %DOCKER_IMAGE%:%DOCKER_VERSION%"
                 }
             }
