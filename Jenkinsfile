@@ -42,7 +42,22 @@ pipeline {
                 
             }
         }
-             bat "docker run -itd -p 8081:8080 %DOCKER_IMAGE%:%DOCKER_VERSION%"
+             /* ---- Stop & remove ALL existing containers ---- */
+        stage('Clean Old Containers') {
+            steps {
+                // Stop all running containers by ID
+                bat 'for /F "tokens=*" %i in (\'docker ps -q\') do docker stop %i || exit 0'
+                // Remove all containers (running or stopped)
+                bat 'for /F "tokens=*" %i in (\'docker ps -aq\') do docker rm %i || exit 0'
+            }
+        }
+
+        /* ---- Run a fresh container ---- */
+        stage('Run New Container') {
+            steps {
+                bat """
+                docker run -itd -p 8081:8080 %DOCKER_IMAGE%:%DOCKER_VERSION%
+                """
         
             }
         }
