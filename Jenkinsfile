@@ -39,7 +39,7 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 script {
-                    bat "docker stop $(docker ps -q) && docker rm $(docker ps -aq)"
+//                    bat "docker stop %(docker ps -q)% && docker rm %(docker ps -aq)%"
                     bat "docker run -itd -p 8081:8080 %DOCKER_IMAGE%:%DOCKER_VERSION%"
                 }
             }
