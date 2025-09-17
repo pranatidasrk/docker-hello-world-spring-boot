@@ -1,9 +1,13 @@
 pipeline {
     agent any
 
-    /* ---------- Parameters ---------- */
     parameters {
-        string(name: 'DOCKER_TAG', defaultValue: 'V1', description: 'Docker image tag')
+        // <─── Parameter user will fill when starting the job
+        string(
+            name: 'DOCKER_VERSION',
+            defaultValue: 'latest',
+            description: 'Docker image tag/version (e.g. v1.0, 1.2.3, latest)'
+        )
     }
 
     environment {
