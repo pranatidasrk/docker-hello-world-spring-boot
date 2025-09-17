@@ -1,20 +1,16 @@
 pipeline {
     agent any
 
+    /* ---------- Parameters ---------- */
     parameters {
-        // <─── Parameter user will fill when starting the job
-        string(
-            name: 'DOCKER_VERSION',
-            defaultValue: 'latest',
-            description: 'Docker image tag/version (e.g. v1.0, 1.2.3, latest)'
-        )
+        string(name: 'GIT_BRANCH', defaultValue: 'branch1', description: 'Git branch to build')
+        string(name: 'DOCKER_TAG', defaultValue: 'V1', description: 'Docker image tag')
     }
+
     environment {
         // Adjust these for your project
         DOCKER_IMAGE = "krishana"
     }
-
-    stages {
 
         stage('Checkout Git Repo') {
             steps {
@@ -36,25 +32,29 @@ pipeline {
             }
         }
 
-        stage('Run Docker Container') {
+        /* ---- Stop & remove ALL existing containers ---- */
+        stage('Clean Old Containers') {
             steps {
-                script {
-                    bat 'for /F "tokens=*" %i in (\'docker ps -q\') do docker stop %i'
-                    bat 'for /F "tokens=*" %i in (\'docker ps -aq\') do docker rm %i'
-                    bat "docker run -itd -p 8081:8080 %DOCKER_IMAGE%:%DOCKER_VERSION%"
-                }
+                // Stop all running containers by ID
+                bat 'for /F "tokens=*" %i in (\'docker ps -q\') do docker stop %i || exit 0'
+                // Remove all containers (running or stopped)
+                bat 'for /F "tokens=*" %i in (\'docker ps -aq\') do docker rm %i || exit 0'
+            }
+        }
+
+        /* ---- Run a fresh container ---- */
+        stage('Run New Container') {
+            steps {
+                bat """
+                docker run -itd -p 8081:8080 %DOCKER_IMAGE%:%DOCKER_VERSION%
+                """
             }
         }
     }
 
     post {
-        success {
-            echo "✅ Pipeline completed successfully!"
-            echo "Docker image: %DOCKER_IMAGE%:%IMAGE_TAG%"
-            echo "Container '%CONTAINER_NAME%' is running and mapped to port 8080."
-        }
-        failure {
-            echo "❌ Pipeline failed. Check the console logs for errors."
+        always {
+            echo "Pipeline finished."
         }
     }
 }
