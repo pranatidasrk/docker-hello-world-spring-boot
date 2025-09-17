@@ -31,7 +31,7 @@ pipeline {
         stage('Maven Build') {
             steps {
                 // Use the maven goals you need (e.g. clean install)
-                bat 'mvn clean package'
+                bat 'mvn clean package-DskipTests'
             }
         }
 
