@@ -42,23 +42,8 @@ pipeline {
                 
             }
         }
-
-        /* --- 4️⃣  Stop & remove any existing containers (no name needed) --- */
-        stage('Clean Old Containers') {
-            steps {
-                // Stop all running containers by ID (|| exit 0 avoids error if none running)
-                bat 'for /F "tokens=*" %i in (\'docker ps -q\') do docker stop %i || exit 0'
-                // Remove all containers (running or stopped)
-                bat 'for /F "tokens=*" %i in (\'docker ps -aq\') do docker rm %i || exit 0'
-            }
-        }
-
-        /* --- 5️⃣  Run the new container --- */
-        stage('Run New Container') {
-            steps {
-                bat """
-                docker run -d -p 8081:8080 %DOCKER_IMAGE%:%DOCKER_VERSION%
-                """
+             bat "docker run -itd -p 8081:8080 %DOCKER_IMAGE%:%DOCKER_VERSION%"
+        
             }
         }
     }
