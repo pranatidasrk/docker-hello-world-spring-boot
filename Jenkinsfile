@@ -58,7 +58,7 @@ pipeline {
         stage('Run New Container') {
             steps {
                 bat """
-                docker run -d --name %CONTAINER_NAME% -p 8081:8080 %DOCKER_IMAGE%:${DOCKER_VERSION}
+                docker run -d -p 8081:8080 %DOCKER_IMAGE%:%{DOCKER_VERSION}%
                 """
             }
         }
