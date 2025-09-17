@@ -9,11 +9,12 @@ pipeline {
             description: 'Docker image tag/version (e.g. v1.0, 1.2.3, latest)'
         )
     }
-
     environment {
         // Adjust these for your project
         DOCKER_IMAGE = "krishana"
     }
+
+    stages {
 
         stage('Checkout Git Repo') {
             steps {
@@ -35,29 +36,25 @@ pipeline {
             }
         }
 
-        /* ---- Stop & remove ALL existing containers ---- */
-        stage('Clean Old Containers') {
+        stage('Run Docker Container') {
             steps {
-                // Stop all running containers by ID
-                bat 'for /F "tokens=*" %i in (\'docker ps -q\') do docker stop %i || exit 0'
-                // Remove all containers (running or stopped)
-                bat 'for /F "tokens=*" %i in (\'docker ps -aq\') do docker rm %i || exit 0'
-            }
-        }
-
-        /* ---- Run a fresh container ---- */
-        stage('Run New Container') {
-            steps {
-                bat """
-                docker run -itd -p 8081:8080 %DOCKER_IMAGE%:%DOCKER_VERSION%
-                """
+                script {
+                    bat 'for /F "tokens=*" %i in (\'docker ps -q\') do docker stop %i'
+                    bat 'for /F "tokens=*" %i in (\'docker ps -aq\') do docker rm %i'
+                    bat "docker run -itd -p 8081:8080 %DOCKER_IMAGE%:%DOCKER_VERSION%"
+                }
             }
         }
     }
 
     post {
-        always {
-            echo "Pipeline finished."
+        success {
+            echo "✅ Pipeline completed successfully!"
+            echo "Docker image: %DOCKER_IMAGE%:%IMAGE_TAG%"
+            echo "Container '%CONTAINER_NAME%' is running and mapped to port 8080."
+        }
+        failure {
+            echo "❌ Pipeline failed. Check the console logs for errors."
         }
     }
 }
