@@ -1,60 +1,72 @@
 pipeline {
     agent any
 
+    /* ---------- Parameters shown at build time ---------- */
     parameters {
-        // <─── Parameter user will fill when starting the job
-        string(
-            name: 'DOCKER_VERSION',
-            defaultValue: 'latest',
-            description: 'Docker image tag/version (e.g. v1.0, 1.2.3, latest)'
-        )
+        string(name: 'GIT_BRANCH',
+               defaultValue: 'main',
+               description: 'Git branch to checkout')
+        string(name: 'DOCKER_TAG',
+               defaultValue: 'latest',
+               description: 'Docker image tag to build and run')
     }
+
+    /* ---------- Common environment values ---------- */
     environment {
-        // Adjust these for your project
-        DOCKER_IMAGE = "krishana"
+        DOCKER_IMAGE     = 'Krishan'             // ✅ change to your docker image name
     }
 
     stages {
 
-        stage('Checkout Git Repo') {
+        /* --- 1️⃣  Checkout the selected Git branch --- */
+        stage('Checkout') {
             steps {
-                // Replace branch and URL with your repository details
-                git branch: 'branch1', url: 'https://github.com/pranatidasrk/docker-hello-world-spring-boot.git'
+                checkout([$class: 'GitSCM',
+                          branches: [[name: "*/${params.GIT_BRANCH}"]],
+                          userRemoteConfigs: [[url: 'https://github.com/pranatidasrk/docker-hello-world-spring-boot.git']]])
             }
         }
 
-        stage('Build with Maven') {
+        /* --- 2️⃣  Build with Maven --- */
+        stage('Maven Build') {
             steps {
-                // Use Windows batch commands
+                // Use the maven goals you need (e.g. clean install)
                 bat 'mvn clean package'
             }
         }
 
-        stage('Build Docker Image') {
+        /* --- 3️⃣  Build the Docker image --- */
+        stage('Docker Build') {
             steps {
-                bat "docker build -t %DOCKER_IMAGE%:%DOCKER_VERSION% ."
+                bat """
+                docker build -t %DOCKER_IMAGE%:${DOCKER_VERSION} .
+                """
             }
         }
 
-        stage('Run Docker Container') {
+        /* --- 4️⃣  Stop & remove any existing containers (no name needed) --- */
+        stage('Clean Old Containers') {
             steps {
-                script {
-                    bat 'for /F "tokens=*" %i in (\'docker ps -q\') do docker stop %i'
-                    bat 'for /F "tokens=*" %i in (\'docker ps -aq\') do docker rm %i'
-                    bat "docker run -itd -p 8081:8080 %DOCKER_IMAGE%:%DOCKER_VERSION%"
-                }
+                // Stop all running containers by ID (|| exit 0 avoids error if none running)
+                bat 'for /F "tokens=*" %i in (\'docker ps -q\') do docker stop %i || exit 0'
+                // Remove all containers (running or stopped)
+                bat 'for /F "tokens=*" %i in (\'docker ps -aq\') do docker rm %i || exit 0'
+            }
+        }
+
+        /* --- 5️⃣  Run the new container --- */
+        stage('Run New Container') {
+            steps {
+                bat """
+                docker run -d --name %CONTAINER_NAME% -p 8081:8080 %DOCKER_IMAGE%:${DOCKER_VERSION}
+                """
             }
         }
     }
 
     post {
-        success {
-            echo "✅ Pipeline completed successfully!"
-            echo "Docker image: %DOCKER_IMAGE%:%IMAGE_TAG%"
-            echo "Container '%CONTAINER_NAME%' is running and mapped to port 8080."
-        }
-        failure {
-            echo "❌ Pipeline failed. Check the console logs for errors."
+        always {
+            echo "✅ Pipeline completed. New container '%CONTAINER_NAME%' is running."
         }
     }
 }
