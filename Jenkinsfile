@@ -12,7 +12,6 @@ pipeline {
     environment {
         // Adjust these for your project
         DOCKER_IMAGE = "krishana"
-		CONTAINER_NAME = "shaym"
     }
 
     stages {
@@ -41,7 +40,7 @@ pipeline {
             steps {
                 script {
                     
-                    bat "docker run -itd --name %CONTAINER_NAME% -p 8081:8080 %DOCKER_IMAGE%:%DOCKER_VERSION%"
+                    bat "docker run -itd -p 8081:8080 %DOCKER_IMAGE%:%DOCKER_VERSION%"
                 }
             }
         }
