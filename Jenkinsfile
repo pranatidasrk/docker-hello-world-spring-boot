@@ -39,7 +39,7 @@ pipeline {
         stage('Docker Build') {
             steps {
                 bat """
-                docker build -t %DOCKER_IMAGE%:%{DOCKER_VERSION}%.
+                docker build -t %DOCKER_IMAGE%:%DOCKER_VERSION%.
                 """
             }
         }
@@ -58,7 +58,7 @@ pipeline {
         stage('Run New Container') {
             steps {
                 bat """
-                docker run -d -p 8081:8080 %DOCKER_IMAGE%:%{DOCKER_VERSION}%
+                docker run -d -p 8081:8080 %DOCKER_IMAGE%:%DOCKER_VERSION%
                 """
             }
         }
