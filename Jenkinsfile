@@ -4,7 +4,7 @@ pipeline {
     /* ---------- Parameters shown at build time ---------- */
     parameters {
         string(name: 'GIT_BRANCH',
-               defaultValue: 'main',
+               defaultValue: 'branch1',
                description: 'Git branch to checkout')
         string(name: 'DOCKER_TAG',
                defaultValue: 'latest',
