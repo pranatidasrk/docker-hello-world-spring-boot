@@ -3,7 +3,7 @@ pipeline {
 
     /* ---------- Parameters ---------- */
     parameters {
-        string(name: 'GIT_BRANCH', defaultValue: 'branch1', description: 'Git branch to build')
+        string(name: 'GIT_BRANCH', defaultValue: 'any', description: 'Git branch to build')
         string(name: 'DOCKER_TAG', defaultValue: 'V1', description: 'Docker image tag')
     }
 
