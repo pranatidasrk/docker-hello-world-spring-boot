@@ -33,7 +33,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                bat "docker build -t %DOCKER_IMAGE%:%IMAGE_TAG% ."
+                bat "docker build -t %DOCKER_IMAGE%:%DOCKER_VERSION% ."
             }
         }
 
@@ -41,7 +41,7 @@ pipeline {
             steps {
                 script {
                     
-                    bat "docker run -itd --name %CONTAINER_NAME% -p 8081:8080 %DOCKER_IMAGE%:%IMAGE_TAG%"
+                    bat "docker run -itd --name %CONTAINER_NAME% -p 8081:8080 %DOCKER_IMAGE%:%DOCKER_VERSION%"
                 }
             }
         }
