@@ -13,7 +13,7 @@ pipeline {
 
     /* ---------- Common environment values ---------- */
     environment {
-        DOCKER_IMAGE     = 'Krishan'             // ✅ change to your docker image name
+        DOCKER_IMAGE     = 'krishan'             // ✅ change to your docker image name
     }
 
     stages {
