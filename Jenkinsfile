@@ -9,11 +9,14 @@ pipeline {
         string(name: 'DOCKER_TAG',
                defaultValue: 'latest',
                description: 'Docker image tag to build and run')
+
     }
 
     /* ---------- Common environment values ---------- */
     environment {
         DOCKER_IMAGE     = 'krishan'             // ✅ change to your docker image name
+		KUBE_MANIFEST = "hello-world.yaml"       // Manifest file in repo
+        KUBE_CONFIG = "$HOME/.kube/config"       // Jenkins agent must have access
     }
 
     stages {
@@ -54,11 +57,27 @@ pipeline {
         
             }
         } */
-    } 
+    stage('Deploy to Kubernetes') {
+            steps {
+                echo 'Deploying to Kubernetes/Minikube...'
+                sh "kubectl apply -f ${KUBE_MANIFEST}"
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                sh 'kubectl get pods'
+                sh 'kubectl get svc'
+            }
+        }
+    }
 
     post {
-        always {
-            echo "✅ Pipeline completed. New container '%CONTAINER_NAME%' is running."
+        success {
+            echo 'Deployment Successful ✅'
+        }
+        failure {
+            echo 'Deployment Failed ❌'
         }
     }
 }
