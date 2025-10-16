@@ -59,7 +59,7 @@ pipeline {
     stage('Deploy to Kubernetes') {
             steps {
                 echo 'Deploying to Kubernetes/Minikube...'
-				bat 'cd C:\Users\prana\OneDrive\Desktop\study'
+				bat "cd C:\Users\prana\OneDrive\Desktop\study"
                 bat "kubectl apply -f manifest.yaml"
             }
         }
