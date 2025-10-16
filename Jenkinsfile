@@ -14,7 +14,7 @@ pipeline {
 
     /* ---------- Common environment values ---------- */
     environment {
-        DOCKER_IMAGE     = 'krishan'             // ✅ change to your docker image name
+        DOCKER_IMAGE     = 'pranatidasrk/dev'             // ✅ change to your docker image name
 		
     }
 
@@ -44,6 +44,12 @@ pipeline {
                 
             }
         }
+		 stage('Docker hub push') {
+            steps {
+                bat "docker push %DOCKER_IMAGE%:%DOCKER_TAG% ."
+                
+            }
+        }
              /* ---- Stop & remove ALL existing containers ---- */
       
 
@@ -59,8 +65,7 @@ pipeline {
     stage('Deploy to Kubernetes') {
             steps {
                 echo 'Deploying to Kubernetes/Minikube...'
-				bat "cd C:/Users/prana/OneDrive/Desktop/study"
-				bat "dir"
+				bat "powershell -Command "(Get-Content C:/Users/prana/OneDrive/Desktop/study/manifest.yaml) -replace 'latest', '%DOCKER_TAG%' | Set-Content C:/Users/prana/OneDrive/Desktop/study/manifest.yaml"
                 bat "kubectl apply -f C:/Users/prana/OneDrive/Desktop/study/manifest.yaml"
             }
         }
