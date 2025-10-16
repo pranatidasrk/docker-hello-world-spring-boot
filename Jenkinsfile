@@ -15,7 +15,7 @@ pipeline {
     /* ---------- Common environment values ---------- */
     environment {
         DOCKER_IMAGE     = 'krishan'             // ✅ change to your docker image name
-		KUBE_MANIFEST = "hello-world.yaml"       // Manifest file in repo
+		KUBE_MANIFEST = "C:\Users\prana\OneDrive\Desktop\study\minifest.yaml"       // Manifest file in repo
         KUBE_CONFIG = "$HOME/.kube/config"       // Jenkins agent must have access
     }
 
@@ -60,14 +60,14 @@ pipeline {
     stage('Deploy to Kubernetes') {
             steps {
                 echo 'Deploying to Kubernetes/Minikube...'
-                sh "kubectl apply -f ${KUBE_MANIFEST}"
+                bat "kubectl apply -f %KUBE_MANIFEST%"
             }
         }
 
         stage('Verify Deployment') {
             steps {
-                sh 'kubectl get pods'
-                sh 'kubectl get svc'
+                bat 'kubectl get pods'
+                bat 'kubectl get svc'
             }
         }
     }
