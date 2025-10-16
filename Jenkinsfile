@@ -65,7 +65,9 @@ pipeline {
     stage('Deploy to Kubernetes') {
             steps {
                 echo 'Deploying to Kubernetes/Minikube...'
-				bat "powershell -Command "(Get-Content C:/Users/prana/OneDrive/Desktop/study/manifest.yaml) -replace 'latest', '%DOCKER_TAG%' | Set-Content C:/Users/prana/OneDrive/Desktop/study/manifest.yaml"
+				bat '''
+				powershell -Command "(Get-Content C:/Users/prana/OneDrive/Desktop/study/manifest.yaml) -replace 'latest', '%DOCKER_TAG%' | Set-Content C:/Users/prana/OneDrive/Desktop/study/manifest.yaml
+				'''
                 bat "kubectl apply -f C:/Users/prana/OneDrive/Desktop/study/manifest.yaml"
             }
         }
