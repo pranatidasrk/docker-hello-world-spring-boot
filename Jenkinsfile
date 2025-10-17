@@ -40,7 +40,7 @@ pipeline {
         /* --- 3️⃣  Build the Docker image --- */
         stage('Docker Build') {
             steps {
-                bat "docker build -t %DOCKER_IMAGE%:%DOCKER_TAG% ."
+                bat "docker build -t %DOCKER_IMAGE%:%DOCKER_TAG% "
                 
             }
         }
