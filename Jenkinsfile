@@ -66,8 +66,10 @@ pipeline {
             steps {
                 echo 'Deploying to Kubernetes/Minikube...'
 				bat '''
-				powershell -Command "(Get-Content C:/Users/prana/OneDrive/Desktop/study/manifest.yaml) -replace 'latest', '%DOCKER_TAG%' | Set-Content C:/Users/prana/OneDrive/Desktop/study/manifest.yaml
+				powershell -Command "(Get-Content C:/Users/prana/OneDrive/Desktop/study/manifest.yaml) -sed -i 's|${DOCKER_IMAGE}:.*|${DOCKER_IMAGE}:${DOCKER_TAG}|g' ${K8S_MANIFEST} | Set-Content C:/Users/prana/OneDrive/Desktop/study/manifest.yaml
 				'''
+				echo "Updated manifest image tag to ${DOCKER_IMAGE}:${DOCKER_TAG}"
+				
                 bat "kubectl apply -f C:/Users/prana/OneDrive/Desktop/study/manifest.yaml"
             }
         }
