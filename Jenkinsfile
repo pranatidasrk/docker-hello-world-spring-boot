@@ -1,7 +1,6 @@
 pipeline {
     agent any
 
-    /* ---------- Parameters shown at build time ---------- */
     parameters {
         string(name: 'GIT_BRANCH',
                defaultValue: 'branch1',
@@ -9,18 +8,14 @@ pipeline {
         string(name: 'DOCKER_TAG',
                defaultValue: 'latest',
                description: 'Docker image tag to build and run')
-
     }
 
-    /* ---------- Common environment values ---------- */
     environment {
-        DOCKER_IMAGE     = 'pranatidasrk/dev'             // ✅ change to your docker image name
-		
+        DOCKER_IMAGE = 'pranatidasrk/dev'
+        K8S_MANIFEST = 'C:/Users/prana/OneDrive/Desktop/study/manifest.yaml'
     }
 
     stages {
-
-        /* --- 1️⃣  Checkout the selected Git branch --- */
         stage('Checkout') {
             steps {
                 checkout([$class: 'GitSCM',
@@ -29,48 +24,39 @@ pipeline {
             }
         }
 
-        /* --- 2️⃣  Build with Maven --- */
         stage('Maven Build') {
             steps {
-                // Use the maven goals you need (e.g. clean install)
                 bat 'mvn clean package'
             }
         }
 
-        /* --- 3️⃣  Build the Docker image --- */
         stage('Docker Build') {
             steps {
                 bat "docker build -t %DOCKER_IMAGE%:%DOCKER_TAG% ."
-                
             }
         }
-		 stage('Docker hub push') {
-            steps {
-                bat "docker push %DOCKER_IMAGE%:%DOCKER_TAG% "
-                
-            }
-        }
-             /* ---- Stop & remove ALL existing containers ---- */
-      
 
-        /* ---- Run a fresh container ---- */
-   /*     stage('Run New Container') {
+        stage('Push to Docker Hub') {
             steps {
-                bat """
-                docker run -itd -p 8081:8080 %DOCKER_IMAGE%:%DOCKER_TAG%
-                """
-        
+                bat "docker push %DOCKER_IMAGE%:%DOCKER_TAG%"
             }
-        } */
-    stage('Deploy to Kubernetes') {
+        }
+
+        stage('Update Manifest') {
             steps {
-                echo 'Deploying to Kubernetes/Minikube...'
-				bat '''
-				powershell -Command "(Get-Content C:/Users/prana/OneDrive/Desktop/study/manifest.yaml) 's|${DOCKER_IMAGE}:.*|${DOCKER_IMAGE}:${DOCKER_TAG}|g' ${K8S_MANIFEST} | Set-Content C:/Users/prana/OneDrive/Desktop/study/manifest.yaml
-				'''
-				echo "Updated manifest image tag to ${DOCKER_IMAGE}:${DOCKER_TAG}"
-				
-                bat "kubectl apply -f C:/Users/prana/OneDrive/Desktop/study/manifest.yaml"
+                echo "Updating Kubernetes manifest with new image tag..."
+                powershell """
+                (Get-Content '${K8S_MANIFEST}') -replace '${DOCKER_IMAGE}:.*', '${DOCKER_IMAGE}:${DOCKER_TAG}' | 
+                Set-Content '${K8S_MANIFEST}'
+                """
+                echo "✅ Updated manifest image tag to ${DOCKER_IMAGE}:${DOCKER_TAG}"
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                echo 'Deploying to Kubernetes...'
+                bat "kubectl apply -f ${K8S_MANIFEST}"
             }
         }
 
@@ -84,10 +70,10 @@ pipeline {
 
     post {
         success {
-            echo 'Deployment Successful ✅'
+            echo '✅ Deployment Successful'
         }
         failure {
-            echo 'Deployment Failed ❌'
+            echo '❌ Deployment Failed'
         }
     }
 }
