@@ -8,6 +8,9 @@ pipeline {
         string(name: 'DOCKER_TAG',
                defaultValue: 'latest',
                description: 'Docker image tag to build and run')
+        string(name: 'HOST',
+               defaultValue: 'Enter-ip-adress',
+               description: 'Docker image tag to build and run')
     }
 
     environment {
@@ -42,30 +45,14 @@ pipeline {
             }
         }
 
-        stage('Update Manifest') {
+        stage('Deploy to ec2') {
             steps {
-                echo "Updating Kubernetes manifest with new image tag..."
-                powershell """
-                (Get-Content '${K8S_MANIFEST}') -replace '${DOCKER_IMAGE}:.*', '${DOCKER_IMAGE}:${DOCKER_TAG}' | 
-                Set-Content '${K8S_MANIFEST}'
-                """
-                echo "✅ Updated manifest image tag to ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                echo 'Deploying to ${HOST}'
+                bat "ssh -i C:\Users\prana\OneDrive\Desktop\Osakappk.ppk ec2-user@%HOST% docker run -itd -p 8080:8080 %DOCKER_IMAGE%:%DOCKER_TAG% "
             }
         }
 
-        stage('Deploy to Kubernetes') {
-            steps {
-                echo 'Deploying to Kubernetes...'
-                bat "kubectl apply -f ${K8S_MANIFEST}"
-            }
-        }
-
-        stage('Verify Deployment') {
-            steps {
-                bat 'kubectl get pods'
-                bat 'kubectl get svc'
-            }
-        }
+       
     }
 
     post {
