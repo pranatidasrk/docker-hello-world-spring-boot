@@ -2,30 +2,34 @@ pipeline {
     agent any
 
     parameters {
-        string(name: 'GIT_BRANCH', defaultValue: 'branch1', description: 'Git branch to checkout')
-        string(name: 'DOCKER_TAG', defaultValue: 'latest', description: 'Docker image tag to build and run')
-        string(name: 'HOST', defaultValue: 'Enter-ec2-public-ip', description: 'EC2 host IP address')
+        string(name: 'GIT_BRANCH',
+               defaultValue: 'branch1',
+               description: 'Git branch to checkout')
+        string(name: 'DOCKER_TAG',
+               defaultValue: 'latest',
+               description: 'Docker image tag to build and run')
+        string(name: 'HOST',
+               defaultValue: 'Enter-ip-adress',
+               description: 'Deploy in ec2')
     }
 
     environment {
         DOCKER_IMAGE = 'pranatidasrk/dev'
         K8S_MANIFEST = 'C:/Users/prana/OneDrive/Desktop/study/manifest.yaml'
-        PEM_PATH = 'C:/Users/prana/OneDrive/Desktop/Osakappk.pem' // use PEM, not PPK
     }
 
     stages {
         stage('Checkout') {
             steps {
                 checkout([$class: 'GitSCM',
-                    branches: [[name: "*/${params.GIT_BRANCH}"]],
-                    userRemoteConfigs: [[url: 'https://github.com/pranatidasrk/docker-hello-world-spring-boot.git']]
-                ])
+                          branches: [[name: "*/${params.GIT_BRANCH}"]],
+                          userRemoteConfigs: [[url: 'https://github.com/pranatidasrk/docker-hello-world-spring-boot.git']]])
             }
         }
 
         stage('Maven Build') {
             steps {
-                bat 'mvn clean package -DskipTests'
+                bat 'mvn clean package'
             }
         }
 
@@ -35,31 +39,23 @@ pipeline {
             }
         }
 
-        stage('Docker Push') {
+        stage('Push to Docker Hub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    bat """
-                        echo Logging into DockerHub...
-                        echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
-                        docker push %DOCKER_IMAGE%:%DOCKER_TAG%
-                    """
-                }
+                bat "docker push %DOCKER_IMAGE%:%DOCKER_TAG%"
             }
         }
 
-        stage('Deploy to EC2') {
+        stage('Deploy to ec2') {
             steps {
-                echo "🚀 Deploying to ${params.HOST}"
-                // Using PowerShell here to make SSH work reliably on Windows Jenkins
-                powershell """
-                    ssh -i '${env.PEM_PATH}' -o StrictHostKeyChecking=no ec2-user@${params.HOST} `
-                    "docker pull ${env.DOCKER_IMAGE}:${params.DOCKER_TAG} && `
-                     docker stop app || true && `
-                     docker rm app || true && `
-                     docker run -d --name app -p 8080:8080 ${env.DOCKER_IMAGE}:${params.DOCKER_TAG}"
-                """
+                echo 'Deploying to ${HOST}'
+                bat """
+				ssh -i C:\Users\prana\OneDrive\Desktop\Osakappk.ppk ec2-user@%HOST% docker run -itd -p 8080:8080 %DOCKER_IMAGE%:%DOCKER_TAG% 
+				"""
+				
             }
         }
+
+       
     }
 
     post {
