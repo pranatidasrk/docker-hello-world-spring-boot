@@ -55,8 +55,10 @@ pipeline {
             steps {
                 echo "Deploying to ${params.HOST}"
                 bat """
-                ssh -i C:\\Users\\prana\\OneDrive\\Desktop\\Osakappk.ppk ec2-user@%HOST% docker run -itd -p 8080:8080 %DOCKER_IMAGE%:%DOCKER_TAG%
+                #ssh -i C:\\Users\\prana\\OneDrive\\Desktop\\Osakappk.ppk ec2-user@%HOST% docker run -itd -p 8080:8080 %DOCKER_IMAGE%:%DOCKER_TAG%
+                ssh -i C:\\Users\\prana\\OneDrive\\Desktop\\Osakappk.ppk ec2-user@%HOST% mkdir testing
                 """
+                
             }
         }
     }
