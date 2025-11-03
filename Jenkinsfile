@@ -34,8 +34,17 @@ pipeline {
         }
 
         stage('Docker Build') {
-            steps {
-                bat "docker build -t %DOCKER_IMAGE%:%DOCKER_TAG% ."
+    steps {
+        // Ensure DOCKER_TAG has a valid value (fallback to 'latest')
+        bat """
+        if "%DOCKER_TAG%"=="" (
+            set DOCKER_TAG=latest
+        )
+        docker build -t %DOCKER_IMAGE%:%DOCKER_TAG% .
+        """
+    }
+}
+
             }
         }
 
