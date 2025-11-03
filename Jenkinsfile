@@ -9,8 +9,8 @@ pipeline {
                defaultValue: 'latest',
                description: 'Docker image tag to build and run')
         string(name: 'HOST',
-               defaultValue: 'Enter-ip-adress',
-               description: 'Deploy in ec2')
+               defaultValue: 'Enter-ip-address',
+               description: 'Deploy in EC2')
     }
 
     environment {
@@ -34,17 +34,14 @@ pipeline {
         }
 
         stage('Docker Build') {
-    steps {
-        // Ensure DOCKER_TAG has a valid value (fallback to 'latest')
-        bat """
-        if "%DOCKER_TAG%"=="" (
-            set DOCKER_TAG=latest
-        )
-        docker build -t %DOCKER_IMAGE%:%DOCKER_TAG% .
-        """
-    }
-}
-
+            steps {
+                // Ensure DOCKER_TAG has a valid value (fallback to 'latest')
+                bat """
+                if "%DOCKER_TAG%"=="" (
+                    set DOCKER_TAG=latest
+                )
+                docker build -t %DOCKER_IMAGE%:%DOCKER_TAG% .
+                """
             }
         }
 
@@ -54,17 +51,14 @@ pipeline {
             }
         }
 
-        stage('Deploy to ec2') {
+        stage('Deploy to EC2') {
             steps {
-                echo 'Deploying to ${HOST}'
+                echo "Deploying to ${params.HOST}"
                 bat """
-				ssh -i C:\Users\prana\OneDrive\Desktop\Osakappk.ppk ec2-user@%HOST% docker run -itd -p 8080:8080 %DOCKER_IMAGE%:%DOCKER_TAG% 
-				"""
-				
+                ssh -i C:\\Users\\prana\\OneDrive\\Desktop\\Osakappk.ppk ec2-user@%HOST% docker run -itd -p 8080:8080 %DOCKER_IMAGE%:%DOCKER_TAG%
+                """
             }
         }
-
-       
     }
 
     post {
