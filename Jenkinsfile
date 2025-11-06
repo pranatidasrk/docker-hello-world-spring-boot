@@ -56,7 +56,7 @@ pipeline {
                 echo "Deploying to ${params.HOST}"
                 bat """
                 ssh -i "C:\\Users\\prana\\OneDrive\\Desktop\\osakakey.pem" ec2-user@%HOST% "sudo docker stop sangu"
-                ssh -i C:\\Users\\prana\\OneDrive\\Desktop\\osakakey.pem ec2-user@%HOST% sudo docker run -itd -p 8080:8080 -name sangu %DOCKER_IMAGE%:%DOCKER_TAG%
+                ssh -i C:\\Users\\prana\\OneDrive\\Desktop\\osakakey.pem ec2-user@%HOST% sudo docker run -itd -p 8080:8080 --name sangu %DOCKER_IMAGE%:%DOCKER_TAG%
                 """
                 
             }
